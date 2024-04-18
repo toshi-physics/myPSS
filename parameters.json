@@ -1,0 +1,22 @@
+{
+    "run" : 1,
+    "T" : 1,
+    "n_steps" : 1e+4,
+    "dt_dump" : 0.01,
+    "K" : 5,
+    "Gamma0" : 5,
+    "gammaf" : 5,
+    "alpha" : 15,
+    "Pi" : 0.1,
+    "chi": 10,
+    "lambda": 2,
+    "D": 10,
+    "p0": 10,
+    "r_p":1,
+    "rhoseed" : 0.5,
+    "rho_in" : 3.2,
+    "rhoisoend" : 4.5,
+    "rhonemend" : 6.0,
+    "mx" : 50,
+    "my" : 50
+}
