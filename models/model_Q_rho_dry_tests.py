@@ -148,19 +148,19 @@ def main():
     curldivQ= system.get_field('curldivQ')
 
     # Initial Conditions for rho
-    #cx, cy = 0.5 * grid_size; r = 0.2 * grid_size[0]
-    #distance = np.sqrt((xv-cx)**2 + (yv-cy)**2)
-    #rhoinit = np.where(distance<r, rho_seed, 0)
     # set init condition and synchronize momentum with the init condition, important!!
-    #set_rho_islands(rho, 100, rho_seed, grid_size, dr)
-    rho.set_real(np.abs(np.random.normal(rho_seed, rho_seed/1.2, size=grid_size)))
+    #set_uniform_circular_patch(rho, rho_seed, grid_size)
+    set_rho_islands(rhofield=rho, ncluster=50, clusterradius=0.2*grid_size[0], rhoseed=rho_seed, grid_size=grid_size)
+    #rho.set_real(np.abs(np.random.normal(rho_seed, rho_seed/1.2, size=grid_size)))
     rho.synchronize_momentum()
 
     # Initialise Qxx and Qxy
-    Qxx.set_real(0.1*(np.random.rand(mx, my)-0.5)+0.01)
+    itheta = np.pi * np.random.rand(mx, my)
+    Qxx.set_real(0.1*(np.cos(itheta)))
     Qxx.synchronize_momentum()
-    Qxy.set_real(0.1*(np.random.rand(mx, my)-0.5)+0.01)
+    Qxy.set_real(0.1*(np.sin(itheta)))
     Qxy.synchronize_momentum()
+    #set_aster(Qxx, Qxy, grid_size, dr)
 
     # Initialise identity matrix 
     system.get_field('Ident').set_real(np.ones(shape=grid_size))
@@ -208,14 +208,14 @@ def k_power_array(k_grids):
 
     return k_power_arrays
 
-def set_rho_islands(rhofield, ncluster, rhoseed, grid_size, dr):
+def set_rho_islands(rhofield, ncluster, clusterradius, rhoseed, grid_size):
 
-    centers = grid_size[0]*np.random.rand(ncluster,2); radii = 0.1*np.random.rand(ncluster)*grid_size[0]
+    centers = grid_size[0]*np.random.rand(ncluster,2); radii = clusterradius*np.random.rand(ncluster)
     mean = rhoseed; std = rhoseed/2
 
     tol = 0.001
-    x   = np.arange(0+tol, grid_size[0]-tol, dr[0])
-    y   = np.arange(0+tol, grid_size[1]-tol, dr[1])
+    x   = np.arange(0+tol, grid_size[0]-tol, 1)
+    y   = np.arange(0+tol, grid_size[1]-tol, 1)
     r   = np.meshgrid(x,y)
 
     rhoinit = np.zeros(grid_size)
@@ -224,13 +224,45 @@ def set_rho_islands(rhofield, ncluster, rhoseed, grid_size, dr):
         rhoseeds = np.abs(np.random.normal(mean, std, size=np.shape(distance)))
         rhoinit += np.where(distance <= radii[i], rhoseeds*(radii[i]-distance)/radii[i], 1e-6)
     
-    meanrho = np.sum(rhoinit)*dr[0]*dr[1]/(grid_size[0]*grid_size[1])
+    meanrho = np.average(rhoinit)
 
     rhoinit = rhoinit * rhoseed / meanrho
 
     rhofield.set_real(rhoinit)
     rhofield.synchronize_momentum()
 
+def set_uniform_circular_patch(rhofield, rhoseed, grid_size):
+    
+    tol = 0.001
+    x   = np.arange(0+tol, grid_size[0]-tol, 1)
+    y   = np.arange(0+tol, grid_size[1]-tol, 1)
+    r   = np.meshgrid(x,y)
+    
+    cx, cy = 0.5 * grid_size; cr = 0.2 * grid_size[0]
+    distance = np.sqrt((r[0]-cx)**2 + (r[1]-cy)**2)
+    
+    rhoinit = np.where(distance<cr, rhoseed, 0)
+
+    rhofield.set_real(rhoinit)
+    rhofield.synchronize_momentum()
+
+def set_aster(Qxx, Qxy, grid_size):
+    
+    tol = 0.001
+    x   = np.arange(0+tol, grid_size[0]-tol, 1)
+    y   = np.arange(0+tol, grid_size[1]-tol, 1)
+    r   = np.meshgrid(x,y)
+    cx, cy = 0.5 * grid_size
+    
+    theta = np.arctan2(r[1]-cy,r[0]-cx)
+    theta = np.where(theta<0, theta+2*np.pi, theta)
+    #theta  = theta - np.pi/2 # set spiral
+
+    Qxx.set_real(0.1*np.cos(theta))
+    Qxy.set_real(0.1*np.sin(theta))
+
+    Qxx.synchronize_momentum()
+    Qxy.synchronize_momentum()
 
 if __name__=="__main__":
     main()

@@ -35,6 +35,8 @@ def main():
     rho_nem   = parameters["rhonemend"] /rho_in   # jamming density max for nematic substrate
     mx        = np.int32(parameters["mx"])
     my        = np.int32(parameters["my"])
+    dx        = np.float32(parameters["dx"])
+    dy        = np.float32(parameters["dy"])
     pxx       = 0.5
 
     dt        = T / n_steps     # time step size
@@ -44,7 +46,7 @@ def main():
     
      # Define the grid size.
     grid_size = np.array([mx, my])
-    dr=(1.0, 1.0)
+    dr=np.array([dx, dy])
 
     k_list, k_grids = momentum_grids(grid_size, dr)
     fourier_operators = k_power_array(k_grids)

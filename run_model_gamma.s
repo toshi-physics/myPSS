@@ -37,8 +37,8 @@ rhoisoend=4.5
 rhonemend=6.0
 mx=50
 my=50
-dx=1.0
-dy=1.0
+dx=0.1
+dy=0.1
 
 alphabygamma=$(python3 -c "print('{:.2f}'.format(($lq)**2))")
 p0bygamma=$(python3 -c "print('{:.2f}'.format(($lp)**2))")       # pressure when cells are close packed, should be very high
