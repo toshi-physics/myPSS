@@ -11,7 +11,7 @@ src_dir="$(realpath "${sh_dir}/src")"
 data_dir="$(realpath "${sh_dir}/data")"
 
 if (( $# != 5 )); then
-    echo "Usage: run_model.s model_name lpressure lq ldiffusion lchi gamma"
+    echo "Usage: run_model.s model_name lpressure lq ldiffusion lchi"
     exit 1
 fi
 
@@ -35,8 +35,8 @@ r_p=1
 rho_in=3.2
 rhoisoend=4.5
 rhonemend=6.0
-mx=50
-my=50
+mx=100
+my=100
 dx=1.0
 dy=1.0
 
@@ -80,7 +80,5 @@ echo \
 }
 " > $params_file
 
-
-model_dir=$(realpath "${sh_dir}/models")
-
 python3 -m models.$model -s $save_dir
+python3 -m src.analysis.create_avgs -s $save_dir
