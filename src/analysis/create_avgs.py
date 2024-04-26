@@ -26,12 +26,14 @@ for n in np.arange(n_dump):
     meanrho[i] += np.average(np.loadtxt(savedir+'rho.csv.{:d}'.format(n), delimiter=','))
     Qxx = np.loadtxt(savedir+'Qxx.csv.{:d}'.format(n), delimiter=',')
     Qxy = np.loadtxt(savedir+'Qxy.csv.{:d}'.format(n), delimiter=',')
+    S   = np.sqrt(2*(Qxx**2 + Qxy**2))
+    meanS[i] = np.average(S)
     theta = np.arctan2(Qxy, Qxx)
     meantheta[i] += np.average(theta)
     stdtheta[i] += np.std(theta)
     i+=1
 
 np.savetxt(savedir+'meanrho.csv', meanrho, delimiter=',')
-np.savetxt(savedir+'meanS.csv', meanrho, delimiter=',')
-np.savetxt(savedir+'meantheta.csv', meanrho, delimiter=',')
-np.savetxt(savedir+'stdtheta.csv', meanrho, delimiter=',')
+np.savetxt(savedir+'meanS.csv', meanS, delimiter=',')
+np.savetxt(savedir+'meantheta.csv', meantheta, delimiter=',')
+np.savetxt(savedir+'stdtheta.csv', stdtheta, delimiter=',')

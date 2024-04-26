@@ -45,7 +45,7 @@ p0bygamma=$(python3 -c "print('{:.2f}'.format(($lp)**2))")       # pressure when
 D=$(python3 -c "print('{:.2f}'.format(($ld)**2))")   # Density diffusion coefficient in density dynamics
 chi=$(python3 -c "print('{:.2f}'.format(($lc)**2))")
 
-save_dir="${sh_dir}/data/$model/gamma0_${gamma0}_rhoseed_${rhoseed}_pi_${pii}/lp_${lp}_lq_${lq}_ld_${ld}_lc_${lc}/run_$run/"
+save_dir="${sh_dir}/data/$model/gamma0_${gamma0}_rhoseed_${rhoseed}_pi_${pii}/lp_${lp}_lq_${lq}_ld_${ld}_lc_${lc}/run_$run"
 
 if [ ! -d $save_dir ]; then
     mkdir -p $save_dir
@@ -80,5 +80,6 @@ echo \
 }
 " > $params_file
 
-python3 -m models.$model -s $save_dir
-python3 -m src.analysis.create_avgs -s $save_dir
+#python3 -m models.$model -s $save_dir/data
+#python3 -m src.analysis.create_avgs -s $save_dir
+python3 -m src.analysis.create_videos -s $save_dir
