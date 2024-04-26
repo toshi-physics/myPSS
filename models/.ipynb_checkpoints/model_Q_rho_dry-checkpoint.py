@@ -179,13 +179,13 @@ def main():
         system.update_system(dt)
 
         if t % dn_dump == 0:
-            np.savetxt(savedir+'rho.csv.'+ str(t//dn_dump), rho.get_real(), delimiter=',')
-            np.savetxt(savedir+'Qxx.csv.'+ str(t//dn_dump), Qxx.get_real(), delimiter=',')
-            np.savetxt(savedir+'Qxy.csv.'+ str(t//dn_dump), Qxy.get_real(), delimiter=',')
-            #np.savetxt(savedir+'Gamma.csv.'+ str(t//dn_dump), Gamma.get_real(), delimiter=',')
-            #np.savetxt(savedir+'pressure.csv.'+ str(t//dn_dump), pressure.get_real(), delimiter=',')
-            #np.savetxt(savedir+'charge.csv.'+ str(t//dn_dump), charge.get_real(), delimiter=',')
-            np.savetxt(savedir+'curldivQ.csv.'+ str(t//dn_dump), curldivQ.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'rho.csv.'+ str(t//dn_dump), rho.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'Qxx.csv.'+ str(t//dn_dump), Qxx.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'Qxy.csv.'+ str(t//dn_dump), Qxy.get_real(), delimiter=',')
+            #np.savetxt(savedir+'/data/'+'Gamma.csv.'+ str(t//dn_dump), Gamma.get_real(), delimiter=',')
+            #np.savetxt(savedir+'/data/'+'pressure.csv.'+ str(t//dn_dump), pressure.get_real(), delimiter=',')
+            #np.savetxt(savedir+'/data/'+'charge.csv.'+ str(t//dn_dump), charge.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'curldivQ.csv.'+ str(t//dn_dump), curldivQ.get_real(), delimiter=',')
 
 def momentum_grids(grid_size, dr):
     k_list = [np.fft.fftfreq(grid_size[i], d=dr[i])*2*np.pi for i in range(len(grid_size))]

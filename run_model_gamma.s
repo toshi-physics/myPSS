@@ -84,5 +84,6 @@ echo \
 
 model_dir=$(realpath "${sh_dir}/models")
 
-python3 -m models.$model -s $save_dir/data
+python3 -m models.$model -s $save_dir
 python3 -m src.analysis.create_avgs -s $save_dir
+python3 -m src.analysis.create_videos -s $save_dir

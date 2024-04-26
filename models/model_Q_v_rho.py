@@ -221,13 +221,13 @@ def main():
         system.update_system(dt)
 
         if t % dn_dump == 0:
-            np.savetxt(savedir+'rho.csv.'+ str(t//dn_dump), rho.get_real(), delimiter=',')
-            np.savetxt(savedir+'Qxx.csv.'+ str(t//dn_dump), Qxx.get_real(), delimiter=',')
-            np.savetxt(savedir+'Qxy.csv.'+ str(t//dn_dump), Qxy.get_real(), delimiter=',')
-            np.savetxt(savedir+'vx.csv.'+ str(t//dn_dump), vx.get_real(), delimiter=',')
-            np.savetxt(savedir+'vy.csv.'+ str(t//dn_dump), vy.get_real(), delimiter=',')
-            #np.savetxt(savedir+'charge.csv.'+ str(t//dn_dump), charge.get_real(), delimiter=',')
-            np.savetxt(savedir+'curldivQ.csv.'+ str(t//dn_dump), curldivQ.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'rho.csv.'+ str(t//dn_dump), rho.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'Qxx.csv.'+ str(t//dn_dump), Qxx.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'Qxy.csv.'+ str(t//dn_dump), Qxy.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'vx.csv.'+ str(t//dn_dump), vx.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'vy.csv.'+ str(t//dn_dump), vy.get_real(), delimiter=',')
+            #np.savetxt(savedir+'/data/'+'charge.csv.'+ str(t//dn_dump), charge.get_real(), delimiter=',')
+            np.savetxt(savedir+'/data/'+'curldivQ.csv.'+ str(t//dn_dump), curldivQ.get_real(), delimiter=',')
 
 def momentum_grids(grid_size, dr):
     k_list = [np.fft.fftfreq(grid_size[i], d=dr[i])*2*np.pi for i in range(len(grid_size))]

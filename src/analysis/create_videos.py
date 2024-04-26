@@ -114,13 +114,13 @@ def main():
 
     
     from matplotlib.animation import FuncAnimation
-    animrho = FuncAnimation(figrho, plt_snapshot_rho, interval=1, repeat=True)
+    animrho = FuncAnimation(figrho, plt_snapshot_rho, frames = n_dump, interval=1, repeat=True)
     animrho.save(savedir+'/videos/'+'0_rho.mp4')
 
-    animQ = FuncAnimation(figQ, plt_snapshot_Q, interval=1, repeat=True)
+    animQ = FuncAnimation(figQ, plt_snapshot_Q, frames = n_dump, interval=1, repeat=True)
     animQ.save(savedir+'/videos/'+'0_Q.mp4')
 
-    animvort = FuncAnimation(figvort, plt_snapshot_vort, interval=1, repeat=True)
+    animvort = FuncAnimation(figvort, plt_snapshot_vort, frames = n_dump, interval=1, repeat=True)
     animvort.save(savedir+'/videos/'+'0_vorticity.mp4')
 
 def pixelate(x, gridpoints):
