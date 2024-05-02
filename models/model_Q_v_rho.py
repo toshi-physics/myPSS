@@ -14,6 +14,7 @@ def main():
     initParser.add_argument('-s','--save_dir', help='directory to save data')
     initargs = initParser.parse_args()
     savedir = initargs.save_dir
+    
     if os.path.isfile(savedir+"/parameters.json"):
 	    with open(savedir+"/parameters.json") as jsonFile:
               parameters = json.load(jsonFile)
@@ -38,7 +39,7 @@ def main():
     my        = np.int32(parameters["my"])
     dx        = np.float32(parameters["dx"])
     dy        = np.float32(parameters["dy"])
-    pxx       = 0.5
+    pxx       = 1.0
 
     dt        = T / n_steps     # time step size
     n_dump    = round(T / dt_dump)
@@ -94,8 +95,8 @@ def main():
     # Define Identity # The way its written if you don't define a RHS, the LHS becomes zero at next timestep for Static Fields
     system.create_term("Ident", [("Ident", None)], [1, 0, 0, 0, 0])
     # Define S2
-    system.create_term("S2", [("Qxx", (np.square, None))], [2.0, 0, 0, 0, 0])
-    system.create_term("S2", [("Qxy", (np.square, None))], [2.0, 0, 0, 0, 0])
+    system.create_term("S2", [("Qxx", (np.square, None))], [1.0, 0, 0, 0, 0])
+    system.create_term("S2", [("Qxy", (np.square, None))], [1.0, 0, 0, 0, 0])
     # Define RhoEnd
     system.create_term("rho_end", [("Ident", None)], [rho_iso, 0, 0, 0, 0])
     system.create_term("rho_end", [("S2", None)], [(rho_nem-rho_iso), 0, 0, 0, 0])
@@ -165,15 +166,15 @@ def main():
 
     # Create terms for Qxx timestepping
     system.create_term("Qxx", [("Gamma", None), ("Hxx", None)], [1, 0, 0, 0, 0])
-    system.create_term("Qxx", [("vx", None), ("iqxQxx", None)], [-1, 0, 0, 0, 0])
-    system.create_term("Qxx", [("vy", None), ("iqyQxx", None)], [-1, 0, 0, 0, 0])
+    #system.create_term("Qxx", [("vx", None), ("iqxQxx", None)], [-1, 0, 0, 0, 0])
+    #system.create_term("Qxx", [("vy", None), ("iqyQxx", None)], [-1, 0, 0, 0, 0])
     #system.create_term("Qxx", [("Qxy", None), ("kappa_a_xy", None)], [2, 0, 0, 0, 0])
     #system.create_term("Qxx", [("kappa_s_xx", None)], [lambd, 0, 0, 0, 0])
 
     # Create terms for Qxy timestepping
     system.create_term("Qxy", [("Gamma", None), ("Hxy", None)], [1, 0, 0, 0, 0])
-    system.create_term("Qxy", [("vx", None), ("iqxQxy", None)], [-1, 0, 0, 0, 0])
-    system.create_term("Qxy", [("vy", None), ("iqyQxy", None)], [-1, 0, 0, 0, 0])
+    #system.create_term("Qxy", [("vx", None), ("iqxQxy", None)], [-1, 0, 0, 0, 0])
+    #system.create_term("Qxy", [("vy", None), ("iqyQxy", None)], [-1, 0, 0, 0, 0])
     #system.create_term("Qxy", [("Qxx", None), ("kappa_a_xy", None)], [-2, 0, 0, 0, 0])
     #system.create_term("Qxy", [("kappa_s_xy", None)], [lambd, 0, 0, 0, 0])
 
@@ -188,7 +189,7 @@ def main():
     curldivQ= system.get_field('curldivQ')
 
     # set init condition and synchronize momentum with the init condition, important!!
-    set_rho_islands(rho, 100, rho_seed, grid_size, dr)
+    set_rho_islands(rho, 100, rho_seed, grid_size)
     #rho.set_real(np.abs(np.random.normal(rho_seed, rho_seed/1.2, size=grid_size)))
     #rho.synchronize_momentum()
 
@@ -213,8 +214,8 @@ def main():
     pressure.set_real(p0bygamma*np.exp(rho.get_real()))
     pressure.synchronize_momentum()
 
-    with open(savedir+'parameters.json', 'w') as f:
-        json.dump(parameters, f)
+    if not os.path.exists(savedir+'/data/'):
+        os.makedirs(savedir+'/data/')
 
     for t in tqdm(range(n_steps)):
 
@@ -249,22 +250,24 @@ def k_power_array(k_grids):
 
     return k_power_arrays
 
-def set_rho_islands(rhofield, ncluster, rhoseed, grid_size, dr):
-
-    ncluster = 50
+def set_rho_islands(rhofield, ncluster, rhoseed, grid_size):
     centers = grid_size[0]*np.random.rand(ncluster,2); radii = 0.1*np.random.rand(ncluster)*grid_size[0]
     mean = rhoseed; std = rhoseed/2
 
     tol = 0.001
-    x   = np.arange(0+tol, grid_size[0]-tol, dr[0])
-    y   = np.arange(0+tol, grid_size[1]-tol, dr[1])
+    x   = np.arange(0+tol, grid_size[0]-tol, 1)
+    y   = np.arange(0+tol, grid_size[1]-tol, 1)
     r   = np.meshgrid(x,y)
 
     rhoinit = np.zeros(grid_size)
     for i in np.arange(ncluster):
         distance = np.sqrt((r[0]-centers[i,0])**2+(r[1]-centers[i,1])**2)
         rhoseeds = np.abs(np.random.normal(mean, std, size=np.shape(distance)))
-        rhoinit += np.where(distance <= radii[i], rhoseeds*(radii[i]-distance)/radii[i], 1e-6)
+        rhoinit += np.where(distance < radii[i], rhoseeds*(radii[i]-distance)/radii[i], 1e-3)
+
+    meanrho = np.average(rhoinit)
+
+    rhoinit = rhoinit * rhoseed / meanrho
     
     rhofield.set_real(rhoinit)
     rhofield.synchronize_momentum()

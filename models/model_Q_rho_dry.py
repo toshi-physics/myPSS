@@ -37,7 +37,7 @@ def main():
     my        = np.int32(parameters["my"])
     dx        = np.float32(parameters["dx"])
     dy        = np.float32(parameters["dy"])
-    pxx       = 0.5
+    pxx       = 1.0
 
     dt        = T / n_steps     # time step size
     n_dump    = round(T / dt_dump)
@@ -81,8 +81,8 @@ def main():
     # Define Identity # The way its written if you don't define a RHS, the LHS becomes zero at next timestep for Static Fields
     system.create_term("Ident", [("Ident", None)], [1, 0, 0, 0, 0])
     # Define S2
-    system.create_term("S2", [("Qxx", (np.square, None))], [2.0, 0, 0, 0, 0])
-    system.create_term("S2", [("Qxy", (np.square, None))], [2.0, 0, 0, 0, 0])
+    system.create_term("S2", [("Qxx", (np.square, None))], [1.0, 0, 0, 0, 0])
+    system.create_term("S2", [("Qxy", (np.square, None))], [1.0, 0, 0, 0, 0])
     # Define RhoEnd
     system.create_term("rho_end", [("Ident", None)], [rho_iso, 0, 0, 0, 0])
     system.create_term("rho_end", [("S2", None)], [(rho_nem-rho_iso), 0, 0, 0, 0])
@@ -173,6 +173,9 @@ def main():
     # Initialise Pressure
     pressure.set_real(p0bygamma*np.exp(rho.get_real()))
     pressure.synchronize_momentum()
+
+    if not os.path.exists(savedir+'/data/'):
+        os.makedirs(savedir+'/data/')
 
     for t in tqdm(range(n_steps)):
 
