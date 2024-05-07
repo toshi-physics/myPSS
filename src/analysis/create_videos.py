@@ -10,6 +10,10 @@ def main():
     initParser.add_argument('-s','--save_dir', help='directory to save data')
     initargs = initParser.parse_args()
     savedir = initargs.save_dir
+
+    if not os.path.exists(savedir+'/videos/'):
+        os.makedirs(savedir+'/videos/')
+    
     if os.path.isfile(savedir+"/parameters.json"):
         with open(savedir+"/parameters.json") as jsonFile:
               parameters = json.load(jsonFile)
@@ -39,10 +43,11 @@ def main():
 
     
     figrho, axrho= plt.subplots(figsize=(12, 8), ncols=1)
+    figv, axv= plt.subplots(figsize=(12, 8), ncols=1)
     figQ, axQ= plt.subplots(figsize=(12, 8), ncols=1)
     figvort, axvort= plt.subplots(figsize=(12, 8), ncols=1)
 
-    n=0
+    n=1
     p_factor = 2
     
     rho = np.loadtxt(savedir+'/data/'+'rho.csv.{:d}'.format(n), delimiter=',')
@@ -51,77 +56,114 @@ def main():
     curldivQ = np.loadtxt(savedir+'/data/'+'curldivQ.csv.{:d}'.format(n), delimiter=',')
     vx = np.loadtxt(savedir+'/data/'+'vx.csv.{:d}'.format(n), delimiter=',')
     vy = np.loadtxt(savedir+'/data/'+'vy.csv.{:d}'.format(n), delimiter=',')
-    S = np.sqrt(2*(Qxx**2+Qxy**2))
+    #pixelate fields because the point density is too high
+    vx = pixelate(vx, p_factor)
+    vy = pixelate(vy, p_factor)
+    v  = np.sqrt(vx**2 + vy**2)
+    #vx = np.where(v==0, vx, vx/v)
+    #vy = np.where(v==0, vy, vy/v)
+    S = np.sqrt(Qxx**2+Qxy**2)
     Sp = pixelate(S, p_factor)
     theta = pixelate(np.arctan2(Qxy, Qxx)/2, p_factor)
     nx    = np.cos(theta)
     ny    = np.sin(theta)
+    vscale = 0.5
     
-    crho = [axrho.pcolormesh(xv, yv, S, cmap='viridis', vmin=0, vmax=1.8), axrho.quiver(xv,yv,vx,vy, color='w', pivot='middle')]
-    cQ   = [axQ.pcolormesh(xv, yv, S, cmap='viridis', vmin=0, vmax=1.8), axQ.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],Sp*nx,Sp*ny, color='w', pivot='middle', headlength=0, headaxislength=0)]
-    cvort= axvort.pcolormesh(xv, yv, curldivQ, vmin=-0.1, vmax=0.1)
+    crho = [axrho.pcolormesh(xv, yv, rho, cmap='viridis', vmin=0, vmax=1.8), axrho.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],vx,vy, color='w', pivot='middle', scale=vscale, scale_units='xy')]
+    cv   = [axv.pcolormesh(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor], v, cmap='viridis', vmin=-1.0, vmax=1.0), axv.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],vx,vy, color='w', pivot='middle', scale=vscale, scale_units='xy')]
+    cQ   = [axQ.pcolormesh(xv, yv, S, cmap='viridis', vmin=0, vmax=1), axQ.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],Sp*nx,Sp*ny, color='w', pivot='middle', headlength=0, headaxislength=0)]
+    cvort= [axvort.pcolormesh(xv, yv, curldivQ, vmin=-0.1, vmax=0.1), axv.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],vx,vy, color='w', pivot='middle', scale=vscale, scale_units='xy')]
 
     figrho.colorbar(crho[0])
     axrho.set_title(r"$\rho$")
+    figv.colorbar(cv[0])
+    axv.set_title(r"$v$")
     figQ.colorbar(cQ[0])
     axQ.set_title('S')
-    figvort.colorbar(cvort)
+    figvort.colorbar(cvort[0])
     axvort.set_title('Vorticity')
     
-    tbaxrho = figrho.add_axes([0.05, 0.93, 0.04, 0.04])
+    tbaxrho = figrho.add_axes([0.1, 0.73, 0.04, 0.04])
     tbrho = TextBox(tbaxrho, 'time')
-    tbaxQ = figQ.add_axes([0.05, 0.93, 0.04, 0.04])
+    tbaxv = figrho.add_axes([0.1, 0.73, 0.04, 0.04])
+    tbv = TextBox(tbaxv, 'time')
+    tbaxQ = figQ.add_axes([0.1, 0.73, 0.04, 0.04])
     tbQ = TextBox(tbaxQ, 'time')    
-    tbaxvort = figvort.add_axes([0.05, 0.93, 0.04, 0.04])
+    tbaxvort = figvort.add_axes([0.1, 0.73, 0.04, 0.04])
     tbvort = TextBox(tbaxvort, 'time')
     
-    def plt_snapshot_rho(val):
-        val = (abs(times-val)).argmin()
-        
+    def plt_snapshot_rho(val):        
         rho = np.loadtxt(savedir+'/data/'+'rho.csv.{:d}'.format(val), delimiter=',')
         vx = np.loadtxt(savedir+'/data/'+'vx.csv.{:d}'.format(val), delimiter=',')
         vy = np.loadtxt(savedir+'/data/'+'vy.csv.{:d}'.format(val), delimiter=',')
+        vx = pixelate(vx, p_factor)
+        vy = pixelate(vy, p_factor)
+        #v  = np.sqrt(vx**2 + vy**2)
+        #vx = np.where(v==0, vx, vx/v)
+        #vy = np.where(v==0, vy, vy/v)
         
         crho[0].set_array(rho)
         crho[1].set_UVC(vx, vy)
+        tbrho.set_val(round(times[val],2))
         
         figrho.canvas.draw_idle()
 
-    def plt_snapshot_Q(val):
-        val = (abs(times-val)).argmin()
+    def plt_snapshot_v(val):        
+        vx = np.loadtxt(savedir+'/data/'+'vx.csv.{:d}'.format(val), delimiter=',')
+        vy = np.loadtxt(savedir+'/data/'+'vy.csv.{:d}'.format(val), delimiter=',')
+        vx = pixelate(vx, p_factor)
+        vy = pixelate(vy, p_factor)
+        v  = np.sqrt(vx**2 + vy**2)
+        #vx = np.where(v==0, vx, vx/v)
+        #vy = np.where(v==0, vy, vy/v)
         
+        cv[0].set_array(v)
+        cv[1].set_UVC(vx, vy)
+        tbv.set_val(round(times[val],2))
+        
+        figv.canvas.draw_idle()
+
+    def plt_snapshot_Q(val):        
         Qxx = np.loadtxt(savedir+'/data/'+'Qxx.csv.{:d}'.format(val), delimiter=',')
         Qxy = np.loadtxt(savedir+'/data/'+'Qxy.csv.{:d}'.format(val), delimiter=',')
-        S = np.sqrt(2*(Qxx**2+Qxy**2))
+        S = np.sqrt(Qxx**2+Qxy**2)
         Sp = pixelate(S, p_factor)
         theta = pixelate(np.arctan2(Qxy, Qxx)/2, p_factor)
         nx    = np.cos(theta)
         ny    = np.sin(theta)
         
         cQ[0].set_array(S)
-        cQ[1].set_UVC(Sp*nx, S*ny)
-        
+        cQ[1].set_UVC(Sp*nx, Sp*ny)
+        tbQ.set_val(round(times[val],2))
+
         figQ.canvas.draw_idle()
     
-    def plt_snapshot_vort(val):
-        val = (abs(times-val)).argmin()
-        
+    def plt_snapshot_vort(val):        
         curldivQ = np.loadtxt(savedir+'/data/'+'curldivQ.csv.{:d}'.format(val), delimiter=',')
+        vx = np.loadtxt(savedir+'/data/'+'vx.csv.{:d}'.format(val), delimiter=',')
+        vy = np.loadtxt(savedir+'/data/'+'vy.csv.{:d}'.format(val), delimiter=',')
+        vx = pixelate(vx, p_factor)
+        vy = pixelate(vy, p_factor)
         
-        cvort.set_array(curldivQ)
-        
+        cvort[0].set_array(curldivQ)
+        cvort[1].set_UVC(vx, vy)
+        tbvort.set_val(round(times[val],2))
+
         figvort.canvas.draw_idle()
 
     
     from matplotlib.animation import FuncAnimation
-    animrho = FuncAnimation(figrho, plt_snapshot_rho, frames = n_dump, interval=1, repeat=True)
-    animrho.save(savedir+'/videos/'+'0_rho.mp4')
+    animrho = FuncAnimation(figrho, plt_snapshot_rho, frames = n_dump, interval=100, repeat=True)
+    animrho.save(savedir+'/videos/'+'rho.mp4')
 
-    animQ = FuncAnimation(figQ, plt_snapshot_Q, frames = n_dump, interval=1, repeat=True)
-    animQ.save(savedir+'/videos/'+'0_Q.mp4')
+    animv = FuncAnimation(figv, plt_snapshot_v, frames = n_dump, interval=100, repeat=True)
+    animv.save(savedir+'/videos/'+'v.mp4')
 
-    animvort = FuncAnimation(figvort, plt_snapshot_vort, frames = n_dump, interval=1, repeat=True)
-    animvort.save(savedir+'/videos/'+'0_vorticity.mp4')
+    animQ = FuncAnimation(figQ, plt_snapshot_Q, frames = n_dump, interval=100, repeat=True)
+    animQ.save(savedir+'/videos/'+'Q.mp4')
+
+    animvort = FuncAnimation(figvort, plt_snapshot_vort, frames = n_dump, interval=100, repeat=True)
+    animvort.save(savedir+'/videos/'+'vorticity.mp4')
 
 def pixelate(x, gridpoints):
     nx, ny = np.shape(x)

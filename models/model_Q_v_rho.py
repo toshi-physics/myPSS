@@ -166,17 +166,17 @@ def main():
 
     # Create terms for Qxx timestepping
     system.create_term("Qxx", [("Gamma", None), ("Hxx", None)], [1, 0, 0, 0, 0])
-    #system.create_term("Qxx", [("vx", None), ("iqxQxx", None)], [-1, 0, 0, 0, 0])
-    #system.create_term("Qxx", [("vy", None), ("iqyQxx", None)], [-1, 0, 0, 0, 0])
-    #system.create_term("Qxx", [("Qxy", None), ("kappa_a_xy", None)], [2, 0, 0, 0, 0])
-    #system.create_term("Qxx", [("kappa_s_xx", None)], [lambd, 0, 0, 0, 0])
+    system.create_term("Qxx", [("vx", None), ("iqxQxx", None)], [-1, 0, 0, 0, 0])
+    system.create_term("Qxx", [("vy", None), ("iqyQxx", None)], [-1, 0, 0, 0, 0])
+    system.create_term("Qxx", [("Qxy", None), ("kappa_a_xy", None)], [2, 0, 0, 0, 0])
+    system.create_term("Qxx", [("kappa_s_xx", None)], [lambd, 0, 0, 0, 0])
 
     # Create terms for Qxy timestepping
     system.create_term("Qxy", [("Gamma", None), ("Hxy", None)], [1, 0, 0, 0, 0])
-    #system.create_term("Qxy", [("vx", None), ("iqxQxy", None)], [-1, 0, 0, 0, 0])
-    #system.create_term("Qxy", [("vy", None), ("iqyQxy", None)], [-1, 0, 0, 0, 0])
-    #system.create_term("Qxy", [("Qxx", None), ("kappa_a_xy", None)], [-2, 0, 0, 0, 0])
-    #system.create_term("Qxy", [("kappa_s_xy", None)], [lambd, 0, 0, 0, 0])
+    system.create_term("Qxy", [("vx", None), ("iqxQxy", None)], [-1, 0, 0, 0, 0])
+    system.create_term("Qxy", [("vy", None), ("iqyQxy", None)], [-1, 0, 0, 0, 0])
+    system.create_term("Qxy", [("Qxx", None), ("kappa_a_xy", None)], [-2, 0, 0, 0, 0])
+    system.create_term("Qxy", [("kappa_s_xy", None)], [lambd, 0, 0, 0, 0])
 
     rho     = system.get_field('rho')
     Qxx     = system.get_field('Qxx')

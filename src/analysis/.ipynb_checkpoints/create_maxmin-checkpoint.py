@@ -20,24 +20,29 @@ n_steps   = int(parameters["n_steps"])  # number of time steps
 dt        = T / n_steps     # time step size
 n_dump    = round(T / dt_dump)
 
-meanrho = np.zeros(n_dump)
-meanS   = np.zeros(n_dump)
-meantheta = np.zeros(n_dump)
-stdtheta = np.zeros(n_dump)
+maxrho = 0
+minrho = 0
+maxvx  = 0
+minvx  = 0
+maxvy  = 0
+minvy  = 0
+maxvel = 0
+minvel = 0
+maxS   = 0
+minS   = 0
 
 i=0
 for n in np.arange(n_dump):
-    meanrho[i] += np.average(np.loadtxt(savedir+'/data/rho.csv.{:d}'.format(n), delimiter=','))
-    Qxx = np.loadtxt(savedir+'/data/Qxx.csv.{:d}'.format(n), delimiter=',')
-    Qxy = np.loadtxt(savedir+'/data/Qxy.csv.{:d}'.format(n), delimiter=',')
+    maxrho = np.max(minrho, np.max(np.loadtxt(savedir+'/data/rho.csv.{:d}'.format(n), delimiter=',')))
+    maxvx = np.max(maxvx, np.max(np.loadtxt(savedir+'/data/vx.csv.{:d}'.format(n), delimiter=',')))
+    maxvy = np.max(maxvy, np.max(np.loadtxt(savedir+'/data/vy.csv.{:d}'.format(n), delimiter=',')))
+    minvx = np.min(minvx, np.min(np.loadtxt(savedir+'/data/vx.csv.{:d}'.format(n), delimiter=',')))
+    minvy = np.min(minvy, np.min(np.loadtxt(savedir+'/data/vy.csv.{:d}'.format(n), delimiter=',')))
     S   = np.sqrt(Qxx**2 + Qxy**2)
     meanS[i] = np.average(S)
-    theta = np.arctan2(Qxy, Qxx)/2
+    theta = np.arctan2(Qxy, Qxx)
     meantheta[i] += np.average(theta)
     stdtheta[i] += np.std(theta)
     i+=1
 
-np.savetxt(savedir+'/processed_data/'+'meanrho.csv', meanrho, delimiter=',')
-np.savetxt(savedir+'/processed_data/'+'meanS.csv', meanS, delimiter=',')
-np.savetxt(savedir+'/processed_data/'+'meantheta.csv', meantheta, delimiter=',')
-np.savetxt(savedir+'/processed_data/'+'stdtheta.csv', stdtheta, delimiter=',')
+np.savetxt(savedir+'/processed_data/'+'maxmin.txt', [maxrho, minrho, maxvx, minvx, maxvy, minvy, maxvel, minvel, maxS, minS])
