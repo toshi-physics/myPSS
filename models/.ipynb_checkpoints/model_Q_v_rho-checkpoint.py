@@ -189,7 +189,7 @@ def main():
     curldivQ= system.get_field('curldivQ')
 
     # set init condition and synchronize momentum with the init condition, important!!
-    set_rho_islands(rho, 100, rho_seed, grid_size)
+    set_rho_islands(rho, int(100*rho_seed/0.16), rho_seed, grid_size)
     #rho.set_real(np.abs(np.random.normal(rho_seed, rho_seed/1.2, size=grid_size)))
     #rho.synchronize_momentum()
 
@@ -268,6 +268,8 @@ def set_rho_islands(rhofield, ncluster, rhoseed, grid_size):
     meanrho = np.average(rhoinit)
 
     rhoinit = rhoinit * rhoseed / meanrho
+
+    print("Average rho at start is", np.average(rhoinit), " for rhoseed=", rhoseed)
     
     rhofield.set_real(rhoinit)
     rhofield.synchronize_momentum()

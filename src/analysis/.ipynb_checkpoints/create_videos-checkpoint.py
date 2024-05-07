@@ -67,12 +67,12 @@ def main():
     theta = pixelate(np.arctan2(Qxy, Qxx)/2, p_factor)
     nx    = np.cos(theta)
     ny    = np.sin(theta)
-    vscale = 0.5
+    vscale = 0.1
     
     crho = [axrho.pcolormesh(xv, yv, rho, cmap='viridis', vmin=0, vmax=1.8), axrho.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],vx,vy, color='w', pivot='middle', scale=vscale, scale_units='xy')]
     cv   = [axv.pcolormesh(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor], v, cmap='viridis', vmin=-1.0, vmax=1.0), axv.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],vx,vy, color='w', pivot='middle', scale=vscale, scale_units='xy')]
     cQ   = [axQ.pcolormesh(xv, yv, S, cmap='viridis', vmin=0, vmax=1), axQ.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],Sp*nx,Sp*ny, color='w', pivot='middle', headlength=0, headaxislength=0)]
-    cvort= [axvort.pcolormesh(xv, yv, curldivQ, vmin=-0.1, vmax=0.1), axv.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],vx,vy, color='w', pivot='middle', scale=vscale, scale_units='xy')]
+    cvort= [axvort.pcolormesh(xv, yv, curldivQ, vmin=-0.1, vmax=0.1), axvort.quiver(xv[p_factor:-1:p_factor, p_factor:-1:p_factor], yv[p_factor:-1:p_factor, p_factor:-1:p_factor],vx,vy, color='w', pivot='middle', scale=vscale, scale_units='xy')]
 
     figrho.colorbar(crho[0])
     axrho.set_title(r"$\rho$")
