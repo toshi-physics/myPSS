@@ -95,14 +95,14 @@ def main():
     system.create_term("Hxx", [("rho", None), ("S2", None), ("Qxx", None)], [-1, 0, 0, 0, 0])
     system.create_term("Hxx", [("rho", None), ("Qxx", None)], [-K, 1, 0, 0, 0])
     system.create_term("Hxx", [("Ident", None)], [Pii*pxx, 0, 0, 0, 0])
-    system.create_term("Hxx", [("rho", None)], [-chi/2, 0, 2, 0, 0])
-    system.create_term("Hxx", [("rho", None)], [chi/2, 0, 0, 2, 0])
+    system.create_term("Hxx", [("rho", None)], [chi/2, 0, 2, 0, 0])
+    system.create_term("Hxx", [("rho", None)], [-chi/2, 0, 0, 2, 0])
     # Define Hxy
     system.create_term("Hxy", [("Qxy", None)], [-1, 0, 0, 0, 0])
     system.create_term("Hxy", [("rho", None), ("Qxy", None)], [1, 0, 0, 0, 0])
     system.create_term("Hxy", [("rho", None), ("S2", None), ("Qxy", None)], [-1, 0, 0, 0, 0])
     system.create_term("Hxy", [("rho", None), ("Qxy", None)], [-K, 1, 0, 0, 0])
-    system.create_term("Hxy", [("rho", None)], [chi, 0, 1, 1, 0])
+    system.create_term("Hxy", [("rho", None)], [-chi, 0, 1, 1, 0])
 
     # Create terms for rho timestepping
     system.create_term("rho", [("rho", None)], [-D, 1, 0, 0, 0])
