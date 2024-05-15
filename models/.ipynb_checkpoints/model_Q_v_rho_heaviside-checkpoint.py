@@ -194,11 +194,14 @@ def main():
     #rho.synchronize_momentum()
 
     # Initialise Qxx and Qxy
-    itheta = np.pi * np.random.rand(mx, my)
-    Qxx.set_real(0.1*(np.cos(itheta)))
+    itheta = 2 * np.pi * np.random.rand(mx, my)
+    iS = 0.1*np.random.rand(mx, my)
+    Qxx.set_real(iS*(np.cos(itheta)))
     Qxx.synchronize_momentum()
-    Qxy.set_real(0.1*(np.sin(itheta)))
+    Qxy.set_real(iS*(np.sin(itheta)))
     Qxy.synchronize_momentum()
+    system.get_field('S2').set_real(iS**2)
+    system.get_field('S2').synchronize_momentum()
     #set_aster(Qxx, Qxy, grid_size, dr)
 
     # Initialise identity matrix 

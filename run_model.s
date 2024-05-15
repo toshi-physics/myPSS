@@ -22,9 +22,9 @@ alphabygamma=$(python3 -c "print('{:.2f}'.format($3))")
 D=$(python3 -c "print('{:.2f}'.format($4))")   
 chi=$(python3 -c "print('{:.2f}'.format($5))") 
 
-run=3
+run=1
 pii=0.0
-gamma0=5.0
+gamma0=50.0
 K=5
 rhoseed=2.0
 T=20
@@ -40,7 +40,7 @@ my=100
 dx=1.0
 dy=1.0
 
-save_dir="${sh_dir}/data/$model/gamma0_${gamma0}_rhoseed_${rhoseed}_pi_${pii}/p0_${p0bygamma}_alpha_${alpha}_D_${D}_chi_${chi}/run_${run}"
+save_dir="${sh_dir}/data/$model/invgamma0_${gamma0}_rhoseed_${rhoseed}_pi_${pii}/p0_${p0bygamma}_alpha_${alphabygamma}_D_${D}_chi_${chi}/run_${run}"
 
 if [ ! -d $save_dir ]; then
     mkdir -p $save_dir
