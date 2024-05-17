@@ -23,8 +23,8 @@ D=$(python3 -c "print('{:.2f}'.format($4))")
 chi=$(python3 -c "print('{:.2f}'.format($5))") 
 
 run=1
-pii=0.0
-gamma0=50.0
+pii=0.1
+gamma0=5.0
 K=5
 rhoseed=2.0
 T=20
